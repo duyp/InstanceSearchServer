@@ -101,7 +101,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             sum_sqr += v2_val[j];
             j++;
         }
-        
     }
     //Calculate the rest of array
     while(i < v1_n) {
