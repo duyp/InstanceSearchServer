@@ -27,6 +27,12 @@ double log2( double n )
     return log(n) / log(2.0f);  
 }
 
+float log2f( float n )  
+{  
+    // log(n)/log(2) is log2.  
+    return logf(n) / logf(2.0f);  
+}
+
 typedef struct {
     int id;         // id of document (image)
     float val;       // normalized word frequency value
@@ -47,6 +53,14 @@ typedef struct {
     float* norml1;      // l1 normalization
     float* norml2;      // l2 normalization
 } invFile;
+
+// inverted file for spatial pyramid
+typedef struct {
+    invFile* inv;   // list inverted file
+    int size;       // n inverted file
+    int L;          // pyramid max level
+    float** norml1; // normalize for each level
+} invFilePyramid;
 
 // get inverted file size: memory usage
 double inv_size(const invFile*);
@@ -75,6 +89,18 @@ void inv_clean(invFile*);
 // make histogram for input document
 void hist(invNodeList*, const int*, int, int);
 
+// find spm level for xth set
+int find_spm_level(int x)
+{
+    int i;
+    int lvs[4] = {1, 5, 21, 85};
+    for(i = 0; i < 4; i++)
+    {
+        if (x + 1 <= lvs[i])
+            return i;
+    }
+}
+
 // get normalize by input string
 char get_norm(char* inputstr)
 {
@@ -101,7 +127,7 @@ char get_dist(char* inputstr)
     return DIST_NONE;
 }
 
-float norm_val(const invFile* inv, int docId, float val, char norm)
+double norm_val(const invFile* inv, int docId, double val, char norm)
 {
     switch(norm)
     {
@@ -238,7 +264,7 @@ void inv_init(invFile* inv, int nwords)
 // return: n words in dictionary
 int inv_fill(const mxArray* docsPtr, invFile* inv, int nwords)
 {
-    int i, j, k, count = 0;
+    int i, j, count = 0;
     
     inv_init(inv,nwords);
     inv->ndocs = (int)mxGetNumberOfElements(docsPtr);
@@ -247,7 +273,7 @@ int inv_fill(const mxArray* docsPtr, invFile* inv, int nwords)
     inv->norml1 = (float*)malloc(sizeof(float)*inv->ndocs);
     inv->norml2 = (float*)malloc(sizeof(float)*inv->ndocs);
     
-    printf("Creating inverted file...");
+    //printf("Creating inverted file...");
     for(i = 0; i < inv->ndocs; ++i)      // 
     {
         const mxArray*  w_ptr = mxGetCell(docsPtr, i);  // pointer to ith document
@@ -289,7 +315,7 @@ int inv_fill(const mxArray* docsPtr, invFile* inv, int nwords)
             int w = inv->docs[i].nodes[j].id;
             float tf = inv->docs[i].nodes[j].val; // term frequency = ni/nd
             float idf = (float)inv->ndocs / inv->words[w].size; // inverse document frequency = log(N/ndi)
-            float tfidf = tf*log2(idf);
+            float tfidf = tf*(float)log2(idf);
             
             // update normalize values
             inv->norml0[i] += 1.0f;             // l0   x^0

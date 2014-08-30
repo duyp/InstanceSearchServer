@@ -190,6 +190,88 @@ void quicksortf_asc(int* id,float* val, int first,int last)
     }
 }
 
+void quicksortd_desc(int* id,double* val, int first,int last)
+{
+    int     pivot,j,i;
+    int     temp_i;
+    double   temp;
+    
+     if(first<last){
+         pivot=first;
+         i=first;
+         j=last;
+
+         while(i<j){
+             while(val[i]>=val[pivot]&&i<last)
+                 i++;
+             while(val[j]<val[pivot])
+                 j--;
+             if(i<j){
+                 temp=val[i];
+                  val[i]=val[j];
+                  val[j]=temp;
+
+				  temp_i = id[i];
+				  id[i] = id[j];
+				  id[j] = temp_i;
+             }
+         }
+
+         temp       = val[pivot];
+         val[pivot] = val[j];
+         val[j]     = temp;
+
+		 temp_i     = id[pivot];
+		 id[pivot]  = id[j];
+		 id[j]      = temp_i;
+
+         quicksortd_desc(id, val,first,j-1);
+         quicksortd_desc(id, val,j+1,last);
+
+    }
+}
+
+void quicksortd_asc(int* id,double* val, int first,int last)
+{
+    int     pivot,j,i;
+    int     temp_i;
+    double   temp;
+    
+     if(first<last){
+         pivot=first;
+         i=first;
+         j=last;
+
+         while(i<j){
+             while(val[i]<=val[pivot]&&i<last)
+                 i++;
+             while(val[j]>val[pivot])
+                 j--;
+             if(i<j){
+                 temp=val[i];
+                  val[i]=val[j];
+                  val[j]=temp;
+
+				  temp_i = id[i];
+				  id[i] = id[j];
+				  id[j] = temp_i;
+             }
+         }
+
+         temp       = val[pivot];
+         val[pivot] = val[j];
+         val[j]     = temp;
+
+		 temp_i     = id[pivot];
+		 id[pivot]  = id[j];
+		 id[j]      = temp_i;
+
+         quicksortd_asc(id, val,first,j-1);
+         quicksortd_asc(id, val,j+1,last);
+
+    }
+}
+
 int binarySearch(const int* sortedArray, int toFind, int len) 
 {
     // Returns index of toFind in sortedArray, or -1 if not found

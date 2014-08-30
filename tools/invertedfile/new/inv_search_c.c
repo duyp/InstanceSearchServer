@@ -73,7 +73,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
             printf("Unknown input normalize!\n");
             return;
         }
-//         printf("norm: %s(%d),", input, q_norm);
+        //         printf("norm: %s(%d),", input, q_norm);
         input = (char *) mxCalloc(mxGetN(distIn)+1, sizeof(char));
         mxGetString(distIn, input, mxGetN(distIn)+1);
         q_dist = get_dist(input);
@@ -83,7 +83,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
             printf("Unknown input distance measure!\n");
             return;
         }
-//         printf("distance measure: %s(%d)!\n", input, q_dist);
+        //         printf("distance measure: %s(%d)!\n", input, q_dist);
     }
     
     inv     = *(invFile**) mxGetData(invFileIn);
@@ -120,8 +120,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         }
     }
     if (q_norm == DIST_L2) q_norm_val = sqrt(q_norm_val);
-//     printf("q_norm_val: %lf\n",q_norm_val);
-    
+
     for(i = 0; i < inv->nwords; i++)
     {
         if (qhist[i] > 0 && inv->words[i].size > 0)
@@ -130,17 +129,14 @@ void mexFunction( int nlhs, mxArray *plhs[],
             float q_val = (float)qhist[i]/nqwords; // tf
             
             q_val = q_val*log2(idf)/q_norm_val; // *idf / norm
-//             if (q_val == 0) printf("HERE: q_val = 0. NORM = %lf. IDF = %f. HIST[%d] = %d\n",q_norm_val, log2(idf), i, qhist[i]);
-            
+  
             for(j=0; j < inv->words[i].size; j++)
             {
-                int x = inv->words[i].nodes[j].id;         // candidate image
+                int x = inv->words[i].nodes[j].id;          // candidate image
                 float c_val = inv->words[i].nodes[j].val;   // candidate tf
                 c_val *= log2(idf);
                 // normalize candidate
-                c_val = norm_val(inv,x,c_val,q_norm);
-//                 if (c_val == 0) printf("HERE: c_val = 0\n");
-                 
+                c_val = norm_val(inv,x,c_val,q_norm);                
                 if (dist[x] == 0.0f)
                     ncands++;
                 // calculate distance
@@ -149,7 +145,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         }
     }
     free(qhist);
-//     printf("ncands: %d\n",ncands);
+
     // allocate output
     dims[0] = 1;
     dims[1] = ncands;
