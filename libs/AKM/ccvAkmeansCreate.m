@@ -23,8 +23,6 @@ function [akmeans] = ccvAkmeansCreate(data, k, maxiter, type, ntrees, ...
 %               'hamming' -> hamming distance
 %               'l1'      -> L1 distance (city block)
 %               'l2'      -> L2 euclidean distance
-%               'bhat'    -> Bhattacharyya distance (Hellinger distance)
-%               added by Duy (UIT cloud server 3)
 %               'arccos'  -> arccos distance
 %               'cos'     -> cosine distance
 %               'xor'     -> hamming distance for packed binary inputs
@@ -60,8 +58,7 @@ if nargin<7 || isempty(meanrange),  meanrange = 0;    end;
 if nargin<8 || isempty(maxdepth),   maxdepth = 0;     end;
 if nargin<9 || isempty(minvar),     minvar = 0;       end;
 if nargin<10 || isempty(cycle),     cycle = 0;       end;
-%if nargin<11 || isempty(dist),      dist = 'l2';      end; % caltech
-if nargin<11 || isempty(dist),      dist = 'bhat';      end; % Duy added
+if nargin<11 || isempty(dist),      dist = 'l2';      end;
 if nargin<12 || isempty(maxbins),   maxbins = 25; end;
 if nargin<13 || isempty(sample),    sample = 200;       end;
 if nargin<14 || isempty(mex),       mex = 1;          end;
@@ -182,7 +179,6 @@ while cont && iter<=maxiter
         %create      
         kdt = ccvKdtCreate(means, ntrees, varrange, meanrange, ...
           maxdepth, minvar, cycle, dist, maxbins, sample);
-        fprintf('distance used: %s', dist); % Duy added
         %lookup and get nearest mean to every point
         [ids dists] = ccvKdtKnn(kdt, means, data, 1);
       else      
@@ -277,7 +273,7 @@ while cont && iter<=maxiter
   if verbose, fprintf('dist=%f, total %.2f min %s\n', mdist(iter), toc(ittic)/60, datestr(now)); end;
   
   %check if done
-  min_dist = 1e-6 % custom(Duy), default value = 1e-4
+  min_dist = 1e-5 % custom(Duy), default value = 1e-4
   if (iter>1 && abs(mdist(iter)-mdist(iter-1))<=min_dist) || iter==maxiter
     cont = 0;
   
